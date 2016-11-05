@@ -15,11 +15,13 @@ shared_ptr<T>::shared_ptr(T * ptr) :
 	counter_(new size_t(1)) {
 }
 
-template<typename T> /*strong*/
+template<typename T> /*noexcept*/
 shared_ptr<T>::shared_ptr(const shared_ptr & r) :
-	shared_ptr(r.pointer_) {
-	counter_ = r.counter_;
-	(*counter_)++;
+	pointer_(r.pointer_), 
+	counter_(r.counter_) {
+	if (r.counter_) {
+		(*r.counter_)++;
+	}
 }
 
 template<typename T> /*noexcept*/
