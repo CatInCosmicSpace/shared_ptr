@@ -157,21 +157,3 @@ SCENARIO("SP: operator ->", "operator ->") {
 	
 	REQUIRE(sp->test());
 }
-
-SCENARIO("SP: operator []", "[]") {
-	size_t * ptr = new size_t[10];
-	for (size_t i = 0; i < 10; ++i) {
-		ptr[i] = i;
-	}
-
-	shared_ptr<size_t> sp(ptr);
-	bool test = true;
-	for (size_t i = 0; i < 10; ++i) {
-		if (sp[i] != i) {
-			test = false;
-			break;
-		}
-	}
-
-	REQUIRE(test);
-}
