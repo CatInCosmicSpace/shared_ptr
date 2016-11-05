@@ -27,10 +27,10 @@ SCENARIO("SP: copy ctor", "[copy ctor]") {
 }
 
 SCENARIO("SP: copy ctor {}", "[copy ctor {}]") {
-	shared_ptr<size_t> f_sp(new size_t[10]);
-	auto s_sp{f_sp};
+	shared_ptr<size_t> f_sp(nullptr);
+	shared_ptr<size_t> s_sp{ f_sp };
 
-	REQUIRE(s_sp.get() != nullptr);
+	REQUIRE(s_sp.get() == nullptr);
 	REQUIRE(s_sp.use_count() == 2);
 	REQUIRE(s_sp.unique() == false);
 }
