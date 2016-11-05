@@ -90,11 +90,6 @@ auto shared_ptr<T>::operator->() const noexcept -> T * {
 }
 
 template<typename T> /*noexcept*/
-auto shared_ptr<T>::operator[](std::ptrdiff_t idx) noexcept -> T & {
-	return get()[idx];
-}
-
-template<typename T> /*noexcept*/
 shared_ptr<T>::operator bool() const noexcept {
 	return (pointer_ != nullptr);
 }
@@ -102,7 +97,7 @@ shared_ptr<T>::operator bool() const noexcept {
 template<typename T>
 auto shared_ptr<T>::destroy() -> void {
 	if (counter_ != nullptr && (*counter_)-- == 0) {
-		delete[] pointer_;
+		delete pointer_;
 	}
 }
 

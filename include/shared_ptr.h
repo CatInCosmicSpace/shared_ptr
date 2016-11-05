@@ -27,7 +27,6 @@ public:
 
 	auto operator*() const noexcept -> T &; /*noexcept*/ // TESTED
 	auto operator->() const noexcept -> T *;  /*noexcept*/ // TESTED
-	auto operator[](std::ptrdiff_t idx) noexcept -> T&; /*noexcept*/
 	explicit operator bool() const noexcept; /*noexcept*/ // TESTED
 private:
 	T * pointer_;
