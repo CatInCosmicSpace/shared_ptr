@@ -19,7 +19,7 @@ template<typename T>
 shared_ptr<T>::shared_ptr(const shared_ptr & r) :
 	shared_ptr(r.pointer_) {
 	counter_ = r.counter_;
-	++(*counter_);
+	(*counter_)++;
 }
 
 template<typename T>
@@ -33,30 +33,27 @@ shared_ptr<T>::shared_ptr(shared_ptr && r) :
 template<typename T>
 auto shared_ptr<T>::operator =(const shared_ptr & r) -> shared_ptr & {
 	if (this != &r) {
-		reset();
-		pointer_ = r.pointer_;
-		counter_ = r.counter_;
-		++(*counter_);
+		(shared_ptr<T>(r)).swap(this);
 	}
 	return *this;
 }
 
 template<typename T>
 auto shared_ptr<T>::operator =(shared_ptr && r) -> shared_ptr & {
-	swap(r);
+	if (this != &r) {
+		swap(r);
+	}
 	return *this;
 }
 
 template<typename T>
 shared_ptr<T>::~shared_ptr() {
-	if ((counter_ != nullptr) && (--(*counter_) == 0)) {
-		delete [] pointer_;
-	}
+	destroy();
 }
 
 template<typename T> /*noexcept*/
 auto shared_ptr<T>::reset() noexcept -> void {
-	this->~shared_ptr();
+	destroy();
 	pointer_ = nullptr;
 	counter_ = nullptr;
 }
@@ -100,6 +97,13 @@ auto shared_ptr<T>::operator[](std::ptrdiff_t idx) noexcept -> T & {
 template<typename T> /*noexcept*/
 shared_ptr<T>::operator bool() const noexcept {
 	return (pointer_ != nullptr);
+}
+
+template<typename T>
+auto shared_ptr<T>::destroy() -> void {
+	if (counter_ != nullptr && (*counter_)-- == 0) {
+		delete[] pointer_;
+	}
 }
 
 template<class T, class ...Args>

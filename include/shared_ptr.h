@@ -32,6 +32,8 @@ public:
 private:
 	T * pointer_;
 	size_t * counter_;
+
+	auto destroy() -> void;
 };
 
 template <class T, class... Args>
