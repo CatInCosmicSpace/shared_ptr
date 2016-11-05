@@ -98,6 +98,7 @@ template<typename T>
 auto shared_ptr<T>::destroy() -> void {
 	if (counter_ != nullptr && (*counter_)-- == 0) {
 		delete pointer_;
+		delete counter_;
 	}
 }
 
