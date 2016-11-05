@@ -10,6 +10,10 @@ SCENARIO("SP: default ctor", "[ctor]") {
 }
 
 SCENARIO("SP: params ctor", "[params ctor]") {
+	
+	shared_ptr<size_t> sptr1;
+	shared_ptr<size_t> sptr2{ sptr1 };
+	
 	shared_ptr<size_t> sp(new size_t[10]);
 
 	REQUIRE(sp.get() != nullptr);
