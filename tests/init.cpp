@@ -1,4 +1,4 @@
-#include <shared_ptr.h>
+#include "shared_ptr.h"
 #include <catch.hpp>
 
 SCENARIO("SP: default ctor", "[ctor]") {
@@ -156,4 +156,46 @@ SCENARIO("SP: operator ->", "operator ->") {
 	shared_ptr<Foo> sp(pFoo);
 	
 	REQUIRE(sp->test());
+}
+
+SCENARIO("SP: operator * throw", "operator * throw") {
+	class Foo {
+	public:
+		bool test() {
+			return x;
+		}
+		bool x = true;
+	};
+	Foo * pFoo = nullptr;
+	shared_ptr<Foo> sp(pFoo);
+
+	bool test_b = false;
+	try {
+		(*sp).test();
+	}
+	catch (std::range_error &e) {
+		test_b = true;
+	}
+	REQUIRE(test_b);
+}
+
+SCENARIO("SP: operator -> throw", "operator -> throw") {
+	class Foo {
+	public:
+		bool test() {
+			return x;
+		}
+		bool x = true;
+	};
+	Foo * pFoo = nullptr;
+	shared_ptr<Foo> sp(pFoo);
+
+	bool test_b = false;
+	try {
+		sp->test();
+	}
+	catch (std::range_error &e) {
+		test_b = true;
+	}
+	REQUIRE(test_b);
 }

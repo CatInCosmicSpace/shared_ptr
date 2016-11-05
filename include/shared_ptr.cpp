@@ -9,20 +9,20 @@ shared_ptr<T>::shared_ptr() noexcept :
 	counter_(nullptr) {
 }
 
-template<typename T> /*noexcept*/
-shared_ptr<T>::shared_ptr(T * ptr) noexcept :
+template<typename T> /*strong*/
+shared_ptr<T>::shared_ptr(T * ptr) :
 	pointer_(ptr),
 	counter_(new size_t(1)) {
 }
 
-template<typename T>
+template<typename T> /*strong*/
 shared_ptr<T>::shared_ptr(const shared_ptr & r) :
 	shared_ptr(r.pointer_) {
 	counter_ = r.counter_;
 	(*counter_)++;
 }
 
-template<typename T>
+template<typename T> /*noexcept*/
 shared_ptr<T>::shared_ptr(shared_ptr && r) :
 	pointer_(std::move(r.pointer_)),
 	counter_(std::move(r.counter_)) {
@@ -30,7 +30,7 @@ shared_ptr<T>::shared_ptr(shared_ptr && r) :
 	r.counter_ = nullptr;
 }
 
-template<typename T>
+template<typename T> /*strong*/
 auto shared_ptr<T>::operator =(const shared_ptr & r) -> shared_ptr & {
 	if (this != &r) {
 		(shared_ptr<T>(r)).swap(this);
@@ -38,7 +38,7 @@ auto shared_ptr<T>::operator =(const shared_ptr & r) -> shared_ptr & {
 	return *this;
 }
 
-template<typename T>
+template<typename T> /*noexcept*/
 auto shared_ptr<T>::operator =(shared_ptr && r) -> shared_ptr & {
 	if (this != &r) {
 		swap(r);
@@ -79,13 +79,19 @@ auto shared_ptr<T>::unique() const noexcept -> bool {
 	return (use_count() == 1);
 }
 
-template<typename T> /*noexcept*/
-auto shared_ptr<T>::operator*() const noexcept -> T & {
+template<typename T> /*strong*/
+auto shared_ptr<T>::operator*() const throw(std::range_error) -> T & {
+	if (pointer_ == nullptr) {
+		throw_if_nullptr();
+	}
 	return *pointer_;
 }
 
-template<typename T> /*noexcept*/
-auto shared_ptr<T>::operator->() const noexcept -> T * {
+template<typename T> /*strong*/
+auto shared_ptr<T>::operator->() const throw(std::range_error) -> T * {
+	if (pointer_ == nullptr) {
+		throw_if_nullptr();
+	}
 	return pointer_;
 }
 
@@ -94,12 +100,17 @@ shared_ptr<T>::operator bool() const noexcept {
 	return (pointer_ != nullptr);
 }
 
-template<typename T>
+template<typename T> /*noexcept*/
 auto shared_ptr<T>::destroy() -> void {
 	if (counter_ != nullptr && (*counter_)-- == 0) {
-		delete pointer_;
 		delete counter_;
+		delete pointer_;
 	}
+}
+
+template<typename T>
+auto shared_ptr<T>::throw_if_nullptr() const throw(std::range_error) -> void {
+	throw std::range_error("pointer_ = nullptr");
 }
 
 template<class T, class ...Args>
